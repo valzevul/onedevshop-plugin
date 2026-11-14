@@ -24,7 +24,7 @@ codex plugin add onedevshop@onedevshop
 ## Requirements
 
 - [Pitlane](https://onedevshop.com/pitlane/) running, with Settings > Agents switched on.
-- [Docket](https://onedevshop.com/docket/) with its command-line tool installed and the MCP server switched on in Docket's settings. Claude Code starts it from `~/.local/bin/docket`, where Docket installs it. Codex looks in `~/.local/bin`, `/opt/homebrew/bin` and `/usr/local/bin`, or in `DOCKET_BIN`.
+- [Docket](https://onedevshop.com/docket/) with its command-line tool installed and the MCP server switched on in Docket's settings. The plugin looks for the tool in `~/.local/bin`, `/opt/homebrew/bin` and `/usr/local/bin`; set `DOCKET_BIN` if it lives elsewhere.
 - Node.js 18 or later.
 
 Either app works without the other. A missing app shows as a server that fails to connect.
