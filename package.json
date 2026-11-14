@@ -1,0 +1,14 @@
+{
+  "name": "onedevshop-plugin",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "esbuild servers/src/pitlane.mjs --bundle --platform=node --format=esm --target=node18 --outfile=servers/pitlane.mjs --minify --log-level=warning",
+    "test": "npm run build && node --test tests/*.test.mjs"
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "esbuild": "^0.28.2",
+    "zod": "^4.6.7"
+  }
+}

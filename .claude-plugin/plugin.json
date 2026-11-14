@@ -1,0 +1,9 @@
+{
+  "name": "onedevshop",
+  "version": "0.2.0",
+  "description": "Build and run iOS projects through Pitlane, keep the release backlog in Docket, and walk each release through the App Store steps, from Claude Code.",
+  "author": { "name": "Drobinin Limited", "url": "https://onedevshop.com" },
+  "homepage": "https://onedevshop.com/agents/",
+  "license": "MIT",
+  "keywords": ["ios", "xcode", "simulator", "release", "backlog", "app-store"]
+}

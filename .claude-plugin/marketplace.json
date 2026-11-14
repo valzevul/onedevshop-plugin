@@ -1,0 +1,15 @@
+{
+  "name": "onedevshop",
+  "owner": {
+    "name": "Drobinin Limited",
+    "url": "https://onedevshop.com"
+  },
+  "description": "Agent tools and skills for building and releasing iOS apps with Pitlane and Docket.",
+  "plugins": [
+    {
+      "name": "onedevshop",
+      "source": "./",
+      "description": "Build and run iOS projects through Pitlane, keep the release backlog in Docket, and walk each release through the App Store steps."
+    }
+  ]
+}
