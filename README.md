@@ -41,12 +41,14 @@ Either app works without the other. A missing app shows as a server that fails t
 
 ## Development
 
+The plugin itself is the `plugin/` folder: manifests, skills and two small servers in plain JavaScript with no dependencies. The repository root holds the marketplaces and the tests.
+
 ```sh
 npm install
 npm test
 ```
 
-`npm run build` bundles `servers/src/pitlane.mjs` into `servers/pitlane.mjs`, the file the plugin runs. `.claude-plugin/` holds the Claude Code manifest and marketplace; `plugin.json`, `mcp.json` and `.agents/plugins/marketplace.json` are the Agent Plugins files Codex reads.
+`plugin/.claude-plugin/` is the Claude Code manifest; `plugin/plugin.json` and `plugin/mcp.json` are the Agent Plugins files Codex reads.
 
 ## Privacy
 

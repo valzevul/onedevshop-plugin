@@ -5,7 +5,7 @@ import { chmodSync, mkdtempSync, writeFileSync } from 'node:fs'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 
-const launcher = new URL('../servers/docket.mjs', import.meta.url).pathname
+const launcher = new URL('../plugin/servers/docket.mjs', import.meta.url).pathname
 const run = (env, input = '') => new Promise(resolve => {
   const child = spawn(process.execPath, [launcher], { env: { ...process.env, HOME: mkdtempSync(join(tmpdir(), 'home-')), ...env } })
   let out = ''

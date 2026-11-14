@@ -4,8 +4,9 @@ import http from "node:http";
 import { spawn } from "node:child_process";
 import { fileURLToPath } from "node:url";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
-import { InMemoryTransport } from "@modelcontextprotocol/sdk/inMemory.js";
-import { buildServer } from "../servers/pitlane.mjs";
+import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+
+const SERVER = fileURLToPath(new URL("../plugin/servers/pitlane.mjs", import.meta.url));
 
 const seen = [];
 const fake = http.createServer((req, res) => {
@@ -23,11 +24,11 @@ const fake = http.createServer((req, res) => {
 await new Promise((ready) => fake.listen(0, "127.0.0.1", ready));
 const base = "http://127.0.0.1:" + fake.address().port;
 
+const clients = [];
 const connect = async (url) => {
-  const [a, b] = InMemoryTransport.createLinkedPair();
-  await buildServer(url).connect(a);
   const client = new Client({ name: "test", version: "1" });
-  await client.connect(b);
+  await client.connect(new StdioClientTransport({ command: process.execPath, args: [SERVER], env: { ...process.env, PITLANE_URL: url } }));
+  clients.push(client);
   return client;
 };
 const client = await connect(base);
@@ -78,6 +79,18 @@ test("a refused build comes back as an error with Pitlane's reason", async () =>
   assert.match(refused.content[0].text, /^Pitlane answered 402: Building needs a Pitlane license or trial/);
 });
 
+test("bad arguments and unknown tools are refused before Pitlane is called", async () => {
+  const missing = await call("pitlane_project", {});
+  assert.equal(missing.isError, true);
+  assert.equal(missing.content[0].text, "Missing argument: project.");
+  assert.equal(seen.length, 0);
+  const extra = await call("pitlane_stop", { project: "Murmur", force: true });
+  assert.equal(extra.content[0].text, "Unknown argument: force.");
+  const wrong = await call("pitlane_build", { project: "Murmur", wait: "yes" });
+  assert.equal(wrong.content[0].text, "wait must be true or false.");
+  await assert.rejects(client.callTool({ name: "pitlane_delete", arguments: {} }), /Unknown tool/);
+});
+
 test("a closed Pitlane is reported plainly", async () => {
   const closed = await connect("http://127.0.0.1:1");
   const result = await closed.callTool({ name: "pitlane_status", arguments: {} });
@@ -85,8 +98,8 @@ test("a closed Pitlane is reported plainly", async () => {
   assert.match(result.content[0].text, /Pitlane did not answer/);
 });
 
-test("the bundled file speaks MCP over stdio with no dependencies installed beside it", async () => {
-  const child = spawn(process.execPath, [fileURLToPath(new URL("../servers/pitlane.mjs", import.meta.url))], { env: { ...process.env, PITLANE_URL: base }, stdio: ["pipe", "pipe", "inherit"] });
+test("the server file speaks MCP over stdio with no dependencies installed beside it", async () => {
+  const child = spawn(process.execPath, [SERVER], { env: { ...process.env, PITLANE_URL: base }, stdio: ["pipe", "pipe", "inherit"] });
   let out = "";
   child.stdout.on("data", (chunk) => { out += chunk; });
   child.stdin.write(JSON.stringify({ jsonrpc: "2.0", id: 1, method: "initialize", params: { protocolVersion: "2025-06-18", capabilities: {}, clientInfo: { name: "t", version: "1" } } }) + "\n");
@@ -99,4 +112,10 @@ test("the bundled file speaks MCP over stdio with no dependencies installed besi
   assert.match(status.result.content[0].text, /canBuild/);
 });
 
-test.after(() => { fake.close(); });
+test("the server is plain source under the directory's size limit", async () => {
+  const { statSync, readFileSync } = await import("node:fs");
+  assert.ok(statSync(SERVER).size < 256 * 1024);
+  assert.equal(/^import .* from "(?!node:)/m.test(readFileSync(SERVER, "utf8")), false);
+});
+
+test.after(async () => { await Promise.all(clients.map((client) => client.close())); fake.close(); });

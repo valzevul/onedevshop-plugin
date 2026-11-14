@@ -1,11 +1,19 @@
 {
   "name": "onedevshop",
-  "interface": { "displayName": "One Dev Shop" },
+  "interface": {
+    "displayName": "One Dev Shop"
+  },
   "plugins": [
     {
       "name": "onedevshop",
-      "source": { "source": "local", "path": "./" },
-      "policy": { "installation": "AVAILABLE", "authentication": "ON_INSTALL" },
+      "source": {
+        "source": "local",
+        "path": "./plugin"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
       "category": "Coding"
     }
   ]
