@@ -1,12 +1,16 @@
 {
   "mcpServers": {
     "docket": {
-      "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/servers/docket.mjs"]
+      "command": "${HOME}/.local/bin/docket",
+      "args": [
+        "--mcp"
+      ]
     },
     "pitlane": {
       "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/servers/pitlane.mjs"]
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/servers/pitlane.mjs"
+      ]
     }
   }
 }
